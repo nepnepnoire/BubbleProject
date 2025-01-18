@@ -45,6 +45,8 @@ public class PlayerController : MonoBehaviour
     public float Size;  //泡泡大小倍率
     private float mousePressTime = 0f;  // 鼠标按下的时间
     private bool isPressing = false;  // 是否正在按下鼠标
+    private GameObject currentBubble;  // 当前生成的泡泡对象
+    private Bubble currentBubbleScript;  // 当前泡泡的脚本引用
     /*
     [Header("攻击参数")]
     public GameObject attackTriggerPrefab; // 用于设置攻击触发器的预制体
@@ -63,7 +65,8 @@ public class PlayerController : MonoBehaviour
 
     public void Awake()
     {
-
+         
+        
     }
 
     public void Start()
@@ -200,11 +203,13 @@ public class PlayerController : MonoBehaviour
     }
     private void HandleBlow()
     {
+        
         if (Input.GetMouseButtonDown(0))
         {
             // 鼠标按下时初始化按压时间
             mousePressTime = 0f;
             isPressing = true;
+            GenerateBubble();
         }
 
         // 检测鼠标左键松开
@@ -212,13 +217,23 @@ public class PlayerController : MonoBehaviour
         {
             // 结束按压
             isPressing = false;
-            GenerateBubble();
+            if(currentBubble!=null)
+            {
+                // 停止泡泡的增长，并开始销毁计时
+                currentBubbleScript.StopGrowing();
+                float destroyTime = currentBubbleScript.size * 2f;  // 基于泡泡的大小决定销毁时间
+                currentBubbleScript.StartDestroyCountdown(destroyTime);  // 启动销毁倒计时
+            }
         }
 
         // 如果鼠标正在按下，增加按压时间
-        if (isPressing)
+        if (isPressing&&currentBubble != null)
         {
             mousePressTime += Time.deltaTime;
+
+            //逐渐增大泡泡大小
+            float sizeIncrease = 0.01f;
+            currentBubbleScript.Grow(sizeIncrease);
         }
     }
 
@@ -227,26 +242,10 @@ public class PlayerController : MonoBehaviour
         // 获取鼠标当前位置
         Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-        // 根据按下时间生成不同大小的泡泡
-        float bubbleSize = 1f*Size;  // 默认泡泡大小为1
-
-        if (mousePressTime >= 2f)
-        {
-            bubbleSize = 3f*Size;  // 长按2秒生成大泡泡
-        }
-        else if (mousePressTime >= 1f)
-        {
-            bubbleSize = 2f*Size;  // 长按1秒生成中等大小泡泡
-        }
-        else
-        {
-            bubbleSize = 0.5f*Size;  // 快速点击生成小泡泡
-        }
-
-        // 在鼠标位置生成泡泡
-        GameObject bubble = Instantiate(bubblePrefab, mousePosition, Quaternion.identity);
-        Bubble bubbleScript = bubble.GetComponent<Bubble>();
-        bubbleScript.Initialize(bubbleSize);  // 设置泡泡的大小
+        // 在鼠标位置生成一个小泡泡
+        currentBubble = Instantiate(bubblePrefab, mousePosition, Quaternion.identity);
+        currentBubbleScript = currentBubble.GetComponent<Bubble>();
+        currentBubbleScript.Initialize(0.5f);  // 初始生成的小泡泡
     }
     private void HandleMovement()
     {
