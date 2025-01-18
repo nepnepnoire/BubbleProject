@@ -8,6 +8,8 @@ TagManager:
   - LeftWall
   - RightWall
   - Barry
+  - Bubble
+  - Water
   layers:
   - Default
   - TransparentFX
@@ -42,6 +44,12 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Water
+    uniqueID: 2444324261
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Bubble
+    uniqueID: 2283442937
     locked: 0

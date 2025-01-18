@@ -10,7 +10,6 @@ public class PlayerController : MonoBehaviour
     private bool isControlEnabled; // 控制是否启用
     public Rigidbody2D rb;
     public Vector2 inputDirection;
-    //EnemyManager enemyManager;
 
     [Header("物理材质")]
     public PhysicsMaterial2D defaultMaterial; // 默认物理材质
@@ -18,9 +17,6 @@ public class PlayerController : MonoBehaviour
     [Header("基本参数")]
     public float speed;
     public float jumpSpeed;
-    public float dashSpeed;//冲刺力
-    public float dashDis;
-    public float dashDuration;//冲刺持续时间
     public float currentSpeed;//当前速度
     public int maxHealth = 10;
     public int currentHealth = 10;
@@ -31,11 +27,6 @@ public class PlayerController : MonoBehaviour
     public bool isGrounded = false;//是否接触地面
     public bool isLeftWalled = false;//是否贴在左墙壁
     public bool isRightWalled = false;//是否贴在右边墙壁
-    //public bool dashingCondition = false;//是否可以冲刺
-    //public bool isDashing = false;//
-    //public float DashStartTimer;//冲刺计时器
-    //public float DashCDStartTimer;//冲刺冷却
-    //public float DashCD;
 
     private Vector2 checkpointPosition; // 存储检查点位置
     private bool isDead = false; // 玩家是否死亡
@@ -45,26 +36,10 @@ public class PlayerController : MonoBehaviour
     public float Size;  //泡泡大小倍率
     private float mousePressTime = 0f;  // 鼠标按下的时间
     private bool isPressing = false;  // 是否正在按下鼠标
-    /*
-    [Header("攻击参数")]
-    public GameObject attackTriggerPrefab; // 用于设置攻击触发器的预制体
-    public float attackRange = 5f; // 攻击范围
-    private float lastAttackTime;
-    [Header("受伤无敌")]
-    public float invulnerableDuration;
-    private float invulnerableCounter;
-    public bool invulnerable;
-    public int FixedScale;
-    public float knock_backSpeed;//击退水平速度
-    public float knock_upSpeed;//击退竖直速度
-    */
-
-
-
-    public void Awake()
-    {
-
-    }
+    [Header("游泳参数")]
+    public bool isInWater;
+    public float buoyancyForce = 10.0f;  // 浮力大小
+    public float waterLevel = 0.0f;   // 水位高度
 
     public void Start()
     {
@@ -134,21 +109,8 @@ public class PlayerController : MonoBehaviour
     void Update()
 
     {
-        //if (isDead)
-        //{
-        //    Die();
-        //    currentHealth = maxHealth;
-             //enemyManager.ReloadEnemies();
-        //}
         if (isControlEnabled && !isDead) // 只有在控制启用且未死亡时才处理输入
         {
-
-
-            // 示例：检测玩家死亡
-            if (Input.GetKeyDown(KeyCode.R)) // 假设 R 键用于死亡和防卡死
-            {
-                Die();
-            }
         }
         //硬直状态无法操作
             if (isControlEnabled)
@@ -194,7 +156,13 @@ public class PlayerController : MonoBehaviour
         if (isControlEnabled)
         {
             HandleMovement();
-            //UpdateMaterial(); // 添加更改物理材质的方法
+            if (isInWater)
+            {
+                // 计算浮力
+                float depth = waterLevel - transform.position.y;
+                Vector2 buoyancy = Vector2.up * buoyancyForce * depth;
+                rb.AddForce(buoyancy, ForceMode2D.Force);
+            }
         }
 
     }
@@ -285,7 +253,22 @@ public class PlayerController : MonoBehaviour
         //&dash
 
     }
-
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Water"))
+        {
+            isInWater = true;
+            waterLevel = other.transform.position.y;
+        }
+    }
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Water"))
+        {
+            isInWater = false;
+            waterLevel = 0.0f;
+        }
+    }
     public void HandleJump()
     {
         if (Input.GetKey(KeyCode.Space))
