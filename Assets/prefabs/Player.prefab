@@ -187,3 +187,4 @@ MonoBehaviour:
   isGrounded: 0
   isLeftWalled: 0
   isRightWalled: 0
+  bubblePrefab: {fileID: 0}

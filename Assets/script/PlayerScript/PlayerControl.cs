@@ -39,6 +39,12 @@ public class PlayerController : MonoBehaviour
 
     private Vector2 checkpointPosition; // 存储检查点位置
     private bool isDead = false; // 玩家是否死亡
+
+    [Header("装备泡泡")]
+    public GameObject bubblePrefab;  // 泡泡预设
+    public float Size;  //泡泡大小倍率
+    private float mousePressTime = 0f;  // 鼠标按下的时间
+    private bool isPressing = false;  // 是否正在按下鼠标
     /*
     [Header("攻击参数")]
     public GameObject attackTriggerPrefab; // 用于设置攻击触发器的预制体
@@ -139,7 +145,7 @@ public class PlayerController : MonoBehaviour
 
 
             // 示例：检测玩家死亡
-            if (Input.GetKeyDown(KeyCode.R)) // 假设 R 键用于死亡
+            if (Input.GetKeyDown(KeyCode.R)) // 假设 R 键用于死亡和防卡死
             {
                 Die();
             }
@@ -151,6 +157,7 @@ public class PlayerController : MonoBehaviour
             //HandleDash();
             //HandleAttack();
             HandleJump();
+            HandleBlow();
             if (currentHealth <= 0)
                 {
 
@@ -187,9 +194,59 @@ public class PlayerController : MonoBehaviour
         if (isControlEnabled)
         {
             HandleMovement();
-            UpdateMaterial(); // 添加更改物理材质的方法
+            //UpdateMaterial(); // 添加更改物理材质的方法
         }
 
+    }
+    private void HandleBlow()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            // 鼠标按下时初始化按压时间
+            mousePressTime = 0f;
+            isPressing = true;
+        }
+
+        // 检测鼠标左键松开
+        if (Input.GetMouseButtonUp(0))
+        {
+            // 结束按压
+            isPressing = false;
+            GenerateBubble();
+        }
+
+        // 如果鼠标正在按下，增加按压时间
+        if (isPressing)
+        {
+            mousePressTime += Time.deltaTime;
+        }
+    }
+
+    void GenerateBubble()
+    {
+        // 获取鼠标当前位置
+        Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+        // 根据按下时间生成不同大小的泡泡
+        float bubbleSize = 1f*Size;  // 默认泡泡大小为1
+
+        if (mousePressTime >= 2f)
+        {
+            bubbleSize = 3f*Size;  // 长按2秒生成大泡泡
+        }
+        else if (mousePressTime >= 1f)
+        {
+            bubbleSize = 2f*Size;  // 长按1秒生成中等大小泡泡
+        }
+        else
+        {
+            bubbleSize = 0.5f*Size;  // 快速点击生成小泡泡
+        }
+
+        // 在鼠标位置生成泡泡
+        GameObject bubble = Instantiate(bubblePrefab, mousePosition, Quaternion.identity);
+        Bubble bubbleScript = bubble.GetComponent<Bubble>();
+        bubbleScript.Initialize(bubbleSize);  // 设置泡泡的大小
     }
     private void HandleMovement()
     {
@@ -457,7 +514,7 @@ public class PlayerController : MonoBehaviour
         isDead = false; // 恢复状态
     }
 
-    private void UpdateMaterial()
+    /*private void UpdateMaterial()
     {
         if (!isGrounded) // 如果不在地面
         {
@@ -467,7 +524,7 @@ public class PlayerController : MonoBehaviour
         {
             rb.sharedMaterial = defaultMaterial; // 恢复为默认物理材质
         }
-    }
+    }*/
 
 }
 

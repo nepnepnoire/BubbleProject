@@ -704,6 +704,8 @@ MonoBehaviour:
   isGrounded: 0
   isLeftWalled: 0
   isRightWalled: 0
+  bubblePrefab: {fileID: 8208198888184719874, guid: 0af516afdfee3cf4182aea383bd32304, type: 3}
+  Size: 5
 --- !u!4 &1297087863 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9168642139392915135, guid: b598cee2b118d4745a4226acdc20fe95, type: 3}

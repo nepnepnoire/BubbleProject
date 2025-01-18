@@ -3,7 +3,11 @@ guid: a9c4a40550663a04d940ff34120392db
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - rb: {instanceID: 0}
+  - defaultMaterial: {instanceID: 0}
+  - slipperyMaterial: {instanceID: 0}
+  - bubblePrefab: {fileID: 8208198888184719874, guid: 0af516afdfee3cf4182aea383bd32304, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
