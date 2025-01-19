@@ -12,7 +12,7 @@ public class Bubble : MonoBehaviour
     public float destroyTime;  // 泡泡的销毁时间
     public float time;
     public float maxSize;
-    private bool isGrowing = true;
+    protected bool isGrowing = true;
     private SpriteRenderer spriteRenderer;  // 泡泡的SpriteRenderer，用于控制透明度
     // 泡泡的构造函数,用于测试
     public virtual void Initialize(float bubbleSize)
