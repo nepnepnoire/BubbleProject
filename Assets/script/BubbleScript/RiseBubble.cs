@@ -29,7 +29,7 @@ public class RiseBubble : Bubble
                 transform.position = player.transform.position;
                 if (playerRigidbody.velocity.y <= buoyancySpeed)
                 {
-                    Vector2 buoyancy = Vector2.up * buoyancyForce;
+                    Vector2 buoyancy = Vector2.up * buoyancyForce * size;
                     playerRigidbody.AddForce(buoyancy, ForceMode2D.Force);
                 }
                 else

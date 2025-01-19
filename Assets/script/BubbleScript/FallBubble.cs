@@ -5,7 +5,7 @@ using UnityEngine;
 public class FallBubble : Bubble
 {
     public bool isInsideSphere = false;
-    public float buoyancyForce = 200f;
+    public float buoyancyForce = 20f;
     public float buoyancySpeed = 200f;
 
     private void OnCollisionEnter2D(Collision2D other)
@@ -27,9 +27,9 @@ public class FallBubble : Bubble
             if (player != null && gameObject.GetComponent<Rigidbody2D>() != null)
             {
                 transform.position = player.transform.position;
-                if (playerRigidbody.velocity.y <= buoyancySpeed)
+                if (playerRigidbody.velocity.y >= -buoyancySpeed)
                 {
-                    Vector2 buoyancy = Vector2.up * buoyancyForce;
+                    Vector2 buoyancy = - Vector2.up * buoyancyForce * size;
                     playerRigidbody.AddForce(buoyancy, ForceMode2D.Force);
                 }
                 else
